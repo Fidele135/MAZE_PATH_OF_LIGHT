@@ -4,7 +4,7 @@ from game import PathOfLightGame
 
 def main():
     root = tk.Tk()
-    game = PathOfLightGame(root)
+    PathOfLightGame(root)
     root.mainloop()
 
 

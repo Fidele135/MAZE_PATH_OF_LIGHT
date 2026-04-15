@@ -4,16 +4,20 @@ from pathlib import Path
 
 class ScoreBoard:
     def __init__(self, path):
-        self.path = path
+        self.path = Path(path)
         self.best_score = 0
         self.games_played = 0
         self.load()
 
     def load(self):
         if self.path.exists():
-            data = json.loads(self.path.read_text())
-            self.best_score = data.get("best_score", 0)
-            self.games_played = data.get("games_played", 0)
+            try:
+                data = json.loads(self.path.read_text(encoding="utf-8"))
+                self.best_score = int(data.get("best_score", 0))
+                self.games_played = int(data.get("games_played", 0))
+            except Exception:
+                self.best_score = 0
+                self.games_played = 0
 
     def save_result(self, score):
         self.games_played += 1
@@ -26,5 +30,6 @@ class ScoreBoard:
                     "games_played": self.games_played,
                 },
                 indent=2,
-            )
+            ),
+            encoding="utf-8",
         )

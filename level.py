@@ -20,12 +20,12 @@ class MazeLevel:
 
         for r, row in enumerate(self.grid):
             for c, cell in enumerate(row):
-                if cell == "P":
+                if cell == self.PLAYER:
                     self.player_start = (r, c)
-                    self.grid[r][c] = "."
-                elif cell == "X":
+                    self.grid[r][c] = self.PATH
+                elif cell == self.EXIT:
                     self.exit_pos = (r, c)
-                elif cell == "C":
+                elif cell == self.CRYSTAL:
                     self.remaining_crystals += 1
 
     def is_walkable(self, r, c):
@@ -33,14 +33,14 @@ class MazeLevel:
             return False
         if r >= self.height or c >= self.width:
             return False
-        return self.grid[r][c] != "#"
+        return self.grid[r][c] != self.WALL
 
     def get_cell(self, r, c):
         return self.grid[r][c]
 
     def collect_crystal_at(self, r, c):
-        if self.grid[r][c] == "C":
-            self.grid[r][c] = "."
+        if self.grid[r][c] == self.CRYSTAL:
+            self.grid[r][c] = self.PATH
             self.remaining_crystals -= 1
             return 100
         return 0
@@ -49,7 +49,7 @@ class MazeLevel:
         return (r, c) == self.exit_pos
 
     def is_trap(self, r, c):
-        return self.grid[r][c] == "T"
+        return self.grid[r][c] == self.TRAP
 
     def valid_neighbors(self, r, c):
         neighbors = []
