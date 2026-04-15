@@ -1,0 +1,1 @@
+# MAZE_PATH_OF_LIGHT
