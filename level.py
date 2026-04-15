@@ -1,65 +1,61 @@
 class MazeLevel:
     WALL = "#"
-    ORB = "."
-    ENERGY = "o"
-    EMPTY = " "
+    PATH = "."
     PLAYER = "P"
-    SHADOW = "S"
     EXIT = "X"
+    CRYSTAL = "C"
+    TRAP = "T"
 
     def __init__(self, level_map):
         self.original = [list(row) for row in level_map]
         self.height = len(self.original)
         self.width = len(self.original[0])
-        self.grid = []
-        self.player_start = (1, 1)
-        self.shadow_starts = []
-        self.exit_pos = None
-        self.remaining_orbs = 0
         self.reset()
 
     def reset(self):
         self.grid = [row[:] for row in self.original]
-        self.shadow_starts = []
+        self.player_start = (1, 1)
         self.exit_pos = None
-        self.remaining_orbs = 0
+        self.remaining_crystals = 0
 
-        for row_index, row in enumerate(self.grid):
-            for col_index, cell in enumerate(row):
-                if cell == self.PLAYER:
-                    self.player_start = (row_index, col_index)
-                    self.grid[row_index][col_index] = self.EMPTY
-                elif cell == self.SHADOW:
-                    self.shadow_starts.append((row_index, col_index))
-                    self.grid[row_index][col_index] = self.EMPTY
-                elif cell == self.EXIT:
-                    self.exit_pos = (row_index, col_index)
-                elif cell in (self.ORB, self.ENERGY):
-                    self.remaining_orbs += 1
+        for r, row in enumerate(self.grid):
+            for c, cell in enumerate(row):
+                if cell == "P":
+                    self.player_start = (r, c)
+                    self.grid[r][c] = "."
+                elif cell == "X":
+                    self.exit_pos = (r, c)
+                elif cell == "C":
+                    self.remaining_crystals += 1
 
-    def in_bounds(self, row: int, col: int) -> bool:
-        return 0 <= row < self.height and 0 <= col < self.width
+    def is_walkable(self, r, c):
+        if r < 0 or c < 0:
+            return False
+        if r >= self.height or c >= self.width:
+            return False
+        return self.grid[r][c] != "#"
 
-    def is_wall(self, row: int, col: int) -> bool:
-        return self.grid[row][col] == self.WALL
+    def get_cell(self, r, c):
+        return self.grid[r][c]
 
-    def is_walkable(self, row: int, col: int) -> bool:
-        return self.in_bounds(row, col) and not self.is_wall(row, col)
-
-    def is_energy_item(self, row: int, col: int) -> bool:
-        return self.grid[row][col] == self.ENERGY
-
-    def collect_at(self, row: int, col: int):
-        cell = self.grid[row][col]
-
-        if cell == self.ORB:
-            self.grid[row][col] = self.EMPTY
-            self.remaining_orbs -= 1
-            return 10
-
-        if cell == self.ENERGY:
-            self.grid[row][col] = self.EMPTY
-            self.remaining_orbs -= 1
-            return 50
-
+    def collect_crystal_at(self, r, c):
+        if self.grid[r][c] == "C":
+            self.grid[r][c] = "."
+            self.remaining_crystals -= 1
+            return 100
         return 0
+
+    def is_exit(self, r, c):
+        return (r, c) == self.exit_pos
+
+    def is_trap(self, r, c):
+        return self.grid[r][c] == "T"
+
+    def valid_neighbors(self, r, c):
+        neighbors = []
+        for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            nr = r + dr
+            nc = c + dc
+            if self.is_walkable(nr, nc):
+                neighbors.append((nr, nc))
+        return neighbors

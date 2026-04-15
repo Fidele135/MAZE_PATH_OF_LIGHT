@@ -1,10 +1,10 @@
 import tkinter as tk
-from game import MazePathGame
+from game import PathOfLightGame
 
 
 def main():
     root = tk.Tk()
-    MazePathGame(root)
+    game = PathOfLightGame(root)
     root.mainloop()
 
 

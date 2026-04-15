@@ -1,5 +1,5 @@
 class Entity:
-    def __init__(self, row: int, col: int, color: str):
+    def __init__(self, row, col, color):
         self.row = row
         self.col = col
         self.start_row = row
@@ -12,18 +12,19 @@ class Entity:
 
 
 class LightBeam(Entity):
-    def __init__(self, row: int, col: int, color: str, lives: int):
+    def __init__(self, row, col, color, lives):
         super().__init__(row, col, color)
-        self.score = 0
         self.lives = lives
-        self.energy_ticks = 0
+        self.score = 0
+        self.direction = None
+        self.previous_position = None
+        self.waiting_for_input = True
 
-    @property
-    def energized(self) -> bool:
-        return self.energy_ticks > 0
+    def stop(self):
+        self.direction = None
+        self.previous_position = None
+        self.waiting_for_input = True
 
-
-class Shadow(Entity):
-    def __init__(self, row: int, col: int, color: str):
-        super().__init__(row, col, color)
-        self.afraid = False
+    def start_moving(self, direction):
+        self.direction = direction
+        self.waiting_for_input = False
